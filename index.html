@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -312,18 +313,29 @@ const FORM_URL='https://docs.google.com/forms/d/e/1FAIpQLSdZHOXtXpkhrhhGamZZxnG_
 
 function sub(){
   document.getElementById('ov').classList.add('active');
-  const fd=new FormData();
-  fd.append('entry.755836081', A.q1+' estrelas — '+sl(A.q1));
-  fd.append('entry.521429454', A.q2+' estrelas — '+sl(A.q2));
-  fd.append('entry.1947261200', A.q3+' estrelas — '+sl(A.q3));
-  fd.append('entry.1660267714', A.q4);
-  fd.append('entry.1738100216', A.q5);
-  fd.append('entry.1829388539', A.q6);
-  fd.append('entry.1891459364', A.qn);
-  fd.append('entry.1785397432', A.qe);
-  fd.append('entry.2051699729', A.auth);
-  fetch(FORM_URL,{method:'POST',body:fd,mode:'no-cors'})
-    .finally(ty);
+
+  // Build query string with all answers
+  const params = new URLSearchParams({
+    'entry.755836081': A.q1 + ' estrelas — ' + sl(A.q1),
+    'entry.521429454': A.q2 + ' estrelas — ' + sl(A.q2),
+    'entry.1947261200': A.q3 + ' estrelas — ' + sl(A.q3),
+    'entry.1660267714': A.q4,
+    'entry.1738100216': A.q5,
+    'entry.1829388539': A.q6,
+    'entry.1891459364': A.qn,
+    'entry.1785397432': A.qe,
+    'entry.2051699729': A.auth,
+    'submit': 'Submit'
+  });
+
+  // Use image trick to bypass CORS — works reliably with Google Forms
+  const img = new Image();
+  img.src = FORM_URL + '?' + params.toString();
+  img.onload = ty;
+  img.onerror = ty; // Forms returns error on GET but still records the response
+
+  // Fallback timeout in case neither fires
+  setTimeout(ty, 3000);
 }
 
 function ty(){
